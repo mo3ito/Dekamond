@@ -1,24 +1,16 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/stores/useAuth";
 import { AUTH_ROUTES } from "@/lib/paths/auth";
+import useIsClient from "@/hooks/useIsClient";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
+  const isClient = useIsClient();
 
-    if (!user) {
-      router.push(AUTH_ROUTES.login);
-    }
-  }, [user, router]);
-
-  if (!mounted || !user) return null;
+  if (!isClient || !user) return null;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 ">
