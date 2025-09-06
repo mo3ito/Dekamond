@@ -5,6 +5,7 @@ import { useAuth } from "@/stores/useAuth";
 import { AUTH_ROUTES, HOME_ROUTE } from "@/lib/paths/auth";
 import useIsClient from "@/hooks/useIsClient";
 import { useEffect } from "react";
+import { Button } from "../ui/button";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -37,12 +38,13 @@ export default function Dashboard() {
           <p className="text-gray-300 text-sm sm:text-base">{user.email}</p>
         </div>
 
-        <button
+        <Button
           onClick={() => logout(AUTH_ROUTES.login, router)}
           className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-300"
+          aria-label="خروج"
         >
           خروج
-        </button>
+        </Button>
 
         <p className="text-gray-400 text-xs text-center mt-4 sm:text-sm">
           شما وارد داشبورد خود شده‌اید. از امکانات سایت استفاده کنید.

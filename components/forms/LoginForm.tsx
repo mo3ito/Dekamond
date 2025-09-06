@@ -34,6 +34,9 @@ export default function LoginForm() {
 
       <Button
         type="submit"
+        aria-label={
+          isSubmitting ? "در حال ورود به حساب کاربری" : "ورود به حساب کاربری"
+        }
         className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow-md transition-all ${
           isSubmitting ? "opacity-70 cursor-not-allowed" : ""
         }`}
