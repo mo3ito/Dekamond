@@ -31,6 +31,7 @@ export default function Dashboard() {
             src={user.picture}
             alt={user.name}
             className="object-cover size-full"
+            loading="lazy"
           />
         </div>
 
