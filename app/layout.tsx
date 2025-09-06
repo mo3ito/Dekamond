@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReactQueryProvider } from "@/lib/providers/ReactQueryProvider";
 import StarryBackground from "@/components/dashboard/StarryBackground";
+import Header from "@/components/ui/header/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,12 +20,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable}  bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900`}
-      >
+    <html>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <StarryBackground />
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          <Header />
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );

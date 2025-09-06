@@ -2,18 +2,24 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/stores/useAuth";
-import { AUTH_ROUTES } from "@/lib/paths/auth";
+import { AUTH_ROUTES, HOME_ROUTE } from "@/lib/paths/auth";
 import useIsClient from "@/hooks/useIsClient";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const isClient = useIsClient();
+  useEffect(() => {
+    if (!user) {
+      router.push(AUTH_ROUTES.login);
+    }
+  }, [user]);
 
   if (!isClient || !user) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 ">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="bg-white/5 border border-white/20 backdrop-blur-md rounded-3xl shadow-2xl max-w-md w-full p-8 flex flex-col items-center gap-6 transition-transform hover:scale-[1.02]">
         <div className="relative w-28 h-28 rounded-full border-4 border-indigo-500 overflow-hidden shadow-lg">
           <Image

@@ -1,12 +1,25 @@
 @import "tailwindcss";
 
 body {
-  background: linear-gradient(
-    135deg,       /* زاویه gradient مشابه to-br */
-    #1f2937,      /* from-gray-900 */
-    #374151,      /* via-gray-800 */
-    #1f2937       /* to-gray-900 */
-  );
-  background-size: cover;
-  background-repeat: no-repeat;
+  background: linear-gradient(to bottom, #111827, #1f2937, #111827);
+  direction: rtl;
+}
+
+@layer components {
+  .link-underline {
+    @apply relative text-white font-medium transition-colors;
+  }
+
+  .link-underline::after {
+    @apply absolute left-0 bottom-0 w-0 h-[2px] bg-indigo-400 transition-all;
+    content: "";
+  }
+
+  .link-underline:hover {
+    @apply text-indigo-400;
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
 }
