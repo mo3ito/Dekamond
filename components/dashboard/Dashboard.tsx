@@ -1,35 +1,28 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/stores/useAuth";
+import { AUTH_ROUTES } from "@/lib/paths/auth";
 
 export default function Dashboard() {
+  const { user, logout } = useAuth();
   const router = useRouter();
-  const [user, setUser] = useState<{
-    name: string;
-    email: string;
-    picture: string;
-  } | null>(null);
-
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (!stored) {
-      router.push("/login");
-    } else {
-      setUser(JSON.parse(stored));
+    setMounted(true);
+
+    if (!user) {
+      router.push(AUTH_ROUTES.login);
     }
-  }, [router]);
+  }, [user, router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
-
-  if (!user) return null;
+  if (!mounted || !user) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center  px-4">
-      <div className=" bg-white/5 border border-white/20 backdrop-blur-md rounded-3xl shadow-2xl max-w-md w-full p-8 flex flex-col items-center gap-6 transition-transform hover:scale-[1.02]">
+    <div className="min-h-screen flex items-center justify-center px-4 ">
+      <div className="bg-white/5 border border-white/20 backdrop-blur-md rounded-3xl shadow-2xl max-w-md w-full p-8 flex flex-col items-center gap-6 transition-transform hover:scale-[1.02]">
         <div className="relative w-28 h-28 rounded-full border-4 border-indigo-500 overflow-hidden shadow-lg">
           <Image
             src={user.picture}
@@ -47,7 +40,7 @@ export default function Dashboard() {
         </div>
 
         <button
-          onClick={handleLogout}
+          onClick={() => logout(AUTH_ROUTES.login, router)}
           className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-300"
         >
           خروج
