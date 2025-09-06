@@ -1,26 +1,45 @@
-"use client";
-import { useMutation } from "@tanstack/react-query";
-import { loginApi } from "@/lib/apis/auth";
 import { useRouter } from "next/navigation";
+import { apiClient } from "@/lib/apis/client";
+import { API_URLS } from "@/lib/apis/urls";
+import { useAuth } from "@/stores/useAuth";
+import { AxiosError } from "axios";
+import { AUTH_ROUTES } from "@/lib/paths/auth";
 
-export const useLogin = () => {
+interface UserInfo {
+  name: { first: string; last: string };
+  email: string;
+  picture: { thumbnail: string };
+}
+
+interface RandomUserResponse {
+  results: UserInfo[];
+}
+
+export function useLoginHandler() {
+  const login = useAuth((state) => state.login);
   const router = useRouter();
 
-  return useMutation({
-    mutationFn: loginApi,
-    onSuccess: (user) => {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: `${user.name.first} ${user.name.last}`,
-          email: user.email,
-          picture: user.picture.thumbnail,
-        })
-      );
-      router.push("/dashboard");
-    },
-    onError: (error) => {
-      console.error(error);
-    },
-  });
-};
+  const handleLogin = async () => {
+    try {
+      const data = await apiClient.get<RandomUserResponse>(API_URLS.randomUser);
+      const user = data.results[0];
+
+      const mappedUser = {
+        name: `${user.name.first} ${user.name.last}`,
+        email: user.email,
+        picture: user.picture.thumbnail,
+      };
+      login(mappedUser, AUTH_ROUTES.dashboard, router);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        alert(error.response?.data?.message || "خطا در ارتباط با سرور");
+      } else if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("خطای ناشناخته رخ داد");
+      }
+    }
+  };
+
+  return { handleLogin };
+}

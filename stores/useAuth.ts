@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-interface User {
+export interface User {
   name: string;
   email: string;
   picture: string;
@@ -8,26 +9,27 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  token: string | null;
-  login: (user: User, token: string) => void;
-  logout: () => void;
+  login: (user: User, redirectTo?: string, router?: AppRouterInstance) => void;
+  logout: (redirectTo?: string, router?: AppRouterInstance) => void;
   setUser: (user: User) => void;
 }
 
 export const useAuth = create<AuthState>((set) => ({
-  user: typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null,
-  token: typeof window !== "undefined" ? localStorage.getItem("token") : null,
+  user:
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null,
 
-  login: (user, token) => {
+  login: (user, redirectTo, router) => {
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
-    set({ user, token });
+    set({ user });
+    if (router && redirectTo) router.push(redirectTo);
   },
 
-  logout: () => {
+  logout: (redirectTo = "/login", router) => {
     localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    set({ user: null, token: null });
+    set({ user: null });
+    if (router) router.push(redirectTo);
   },
 
   setUser: (user) => {

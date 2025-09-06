@@ -10,7 +10,6 @@ export const metadata = getMetaData(
 export default function page() {
   return (
     <>
-      
       <Dashboard />;
     </>
   );
