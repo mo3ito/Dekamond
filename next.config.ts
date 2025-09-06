@@ -10,14 +10,17 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "dekamond-umber.vercel.app",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "randomuser.me",
+        pathname: "/**",
       },
       {
         protocol: "http",
         hostname: "localhost",
+        pathname: "/**",
       },
     ],
   },
