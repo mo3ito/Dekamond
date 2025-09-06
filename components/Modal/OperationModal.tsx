@@ -6,24 +6,12 @@ import { createPortal } from "react-dom";
 import useIsClient from "@/hooks/useIsClient";
 import { Button } from "../ui/button";
 import CloseIcon from "../svgs/CloseIcon";
-
-type OperationModalProps = {
-  isShowModal: boolean;
-  onSetShowModal: (value: boolean) => void;
-  containerClassname?: string;
-  content: string;
-  confirmeHandler: () => void;
-  isLoading?: boolean;
-  showLoadingContent?: boolean;
-  svgClassNameConfirm?: string;
-  svgClassNameCancel?: string;
-};
+import { OperationModalProps } from "@/types/modalTypes";
 
 export default function OperationModal({
   isShowModal,
   confirmeHandler,
   onSetShowModal,
-  containerClassname,
   content,
 }: OperationModalProps) {
   const isClient = useIsClient();
@@ -56,10 +44,7 @@ export default function OperationModal({
     >
       <div
         ref={containerRefModal}
-        className={clsx(
-          containerClassname,
-          "bg-zinc-300 min-w-[256px] h-max rounded-lg relative flex items-center justify-center p-4 "
-        )}
+        className="bg-zinc-300 min-w-[256px] h-max rounded-lg relative flex items-center justify-center p-4 "
       >
         <Button
           onClick={closeHandler}

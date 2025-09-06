@@ -4,16 +4,9 @@ import { API_URLS } from "@/lib/apis/urls";
 import { useAuth } from "@/stores/useAuth";
 import { AxiosError } from "axios";
 import { AUTH_ROUTES } from "@/lib/paths/auth";
+import { RandomUserResponse } from "@/types/authTypes";
 
-interface UserInfo {
-  name: { first: string; last: string };
-  email: string;
-  picture: { thumbnail: string };
-}
 
-interface RandomUserResponse {
-  results: UserInfo[];
-}
 
 export function useLoginHandler() {
   const login = useAuth((state) => state.login);

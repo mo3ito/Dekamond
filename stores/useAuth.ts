@@ -1,19 +1,6 @@
 "use client";
 import { create } from "zustand";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-
-export interface User {
-  name: string;
-  email: string;
-  picture: string;
-}
-
-interface AuthState {
-  user: User | null;
-  login: (user: User, redirectTo?: string, router?: AppRouterInstance) => void;
-  logout: (redirectTo?: string, router?: AppRouterInstance) => void;
-  setUser: (user: User) => void;
-}
+import { AuthState } from "@/types/authTypes";
 
 export const useAuth = create<AuthState>((set) => ({
   user:
