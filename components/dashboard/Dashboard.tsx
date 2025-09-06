@@ -4,14 +4,16 @@ import Image from "next/image";
 import { useAuth } from "@/stores/useAuth";
 import { AUTH_ROUTES } from "@/lib/paths/auth";
 import useIsClient from "@/hooks/useIsClient";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import LoadingPage from "../ui/LoadingPage";
+import OperationModal from "../Modal/OperationModal";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const isClient = useIsClient();
+  const [isShowModalLogout, setIsShowModalLogout] = useState<boolean>(false);
   useEffect(() => {
     if (!user) {
       router.push(AUTH_ROUTES.login);
@@ -42,7 +44,7 @@ export default function Dashboard() {
         </div>
 
         <Button
-          onClick={() => logout(AUTH_ROUTES.login, router)}
+          onClick={() => setIsShowModalLogout(true)}
           className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-300"
           aria-label="خروج"
         >
@@ -53,6 +55,12 @@ export default function Dashboard() {
           شما وارد داشبورد خود شده‌اید. از امکانات سایت استفاده کنید.
         </p>
       </div>
+      <OperationModal
+        isShowModal={isShowModalLogout}
+        onSetShowModal={(value) => setIsShowModalLogout(value)}
+        content={"آیا از خروج اطمینان دارید؟"}
+        confirmeHandler={() => logout(AUTH_ROUTES.login, router)}
+      />
     </div>
   );
 }

@@ -8,8 +8,6 @@ export default function Home() {
         <h1 className="text-4xl sm:text-7xl font-extrabold text-white mb-4 drop-shadow-lg">
           DEKAMOND
         </h1>
-
-        {/* خوش آمدید در تگ جدا */}
         <h2 className="text-2xl sm:text-3xl font-bold text-indigo-400 mb-2">
           خوش آمدید!
         </h2>
