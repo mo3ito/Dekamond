@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "dekamond.vercel.app",
+        hostname: "dekamond-umber.vercel.app",
       },
       {
         protocol: "https",
