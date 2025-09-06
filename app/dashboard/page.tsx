@@ -1,5 +1,4 @@
 import Dashboard from "@/components/dashboard/Dashboard";
-import StarryBackground from "@/components/dashboard/StarryBackground";
 import getMetaData from "@/lib/seo/getMetaData";
 
 export const metadata = getMetaData(

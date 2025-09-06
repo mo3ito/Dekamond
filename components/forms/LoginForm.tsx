@@ -1,12 +1,11 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Label from "@/components/ui/label";
+import { Label } from "../ui/label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/schemas/loginSchema";
 import { useLoginHandler } from "@/hooks/useLogin";
-import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const {
@@ -14,7 +13,6 @@ export default function LoginForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(loginSchema) });
-  const router = useRouter();
   const { handleLogin } = useLoginHandler();
 
   return (
@@ -26,7 +24,7 @@ export default function LoginForm() {
         id="phone"
         placeholder="09xxxxxxxxx"
         {...register("phone")}
-        className="border-gray-700 bg-gray-800 text-white focus:border-indigo-500 focus:ring-indigo-500"
+        className="border-gray-700 bg-gray-800 text-white focus:border-indigo-500 focus:ring-indigo-500 text-left"
       />
       {errors.phone && (
         <p className="text-red-500 text-sm">{errors.phone.message}</p>

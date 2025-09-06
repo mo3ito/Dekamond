@@ -4,7 +4,7 @@ const defaultHeaders = {
   "Content-Type": "application/json",
 };
 
-interface RequestOptions {
+export interface RequestOptions {
   authorization?: string;
   onProgress?: (progress: number) => void;
 }
@@ -19,7 +19,7 @@ async function handleRequest<T>(
     if (error instanceof AxiosError && error.response) {
       console.error("Request failed with status:", error.response.status);
       console.error("Response data:", error.response.data);
-      throw new Error(error.response.data.message || "Request failed");
+      throw new Error(error.response.data?.message || "Request failed");
     }
     throw new Error("An unknown error occurred");
   }
@@ -43,9 +43,9 @@ export const apiClient = {
       })
     ),
 
-  post: async <T>(
+  post: async <T, P = unknown>(
     url: string,
-    payload?: any,
+    payload?: P,
     options?: RequestOptions
   ): Promise<T> =>
     handleRequest(() =>
@@ -64,9 +64,9 @@ export const apiClient = {
       })
     ),
 
-  put: async <T>(
+  put: async <T, P = unknown>(
     url: string,
-    payload?: any,
+    payload?: P,
     options?: RequestOptions
   ): Promise<T> =>
     handleRequest(() =>

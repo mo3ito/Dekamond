@@ -1,4 +1,3 @@
-import { HOME_ROUTE } from "@/lib/paths/auth";
 import Link from "next/link";
 import { menuLinks } from "@/lib/paths/menu";
 import Logo from "../logo";

@@ -2,10 +2,11 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/stores/useAuth";
-import { AUTH_ROUTES, HOME_ROUTE } from "@/lib/paths/auth";
+import { AUTH_ROUTES } from "@/lib/paths/auth";
 import useIsClient from "@/hooks/useIsClient";
 import { useEffect } from "react";
 import { Button } from "../ui/button";
+import LoadingPage from "../ui/LoadingPage";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -15,9 +16,11 @@ export default function Dashboard() {
     if (!user) {
       router.push(AUTH_ROUTES.login);
     }
-  }, [user]);
+  }, [user, router]);
 
-  if (!isClient || !user) return null;
+  if (!isClient || !user) {
+    return <LoadingPage />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
