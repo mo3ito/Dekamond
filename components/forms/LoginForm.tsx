@@ -24,7 +24,7 @@ export default function LoginForm() {
         id="phone"
         placeholder="09xxxxxxxxx"
         {...register("phone")}
-        className="border-gray-700 bg-gray-800 text-white focus:border-indigo-500 focus:ring-indigo-500 text-left"
+        className="border-gray-700 bg-gray-800 text-white focus:border-indigo-500 focus:ring-indigo-500 text-start"
       />
       {errors.phone && (
         <p className="text-red-500 text-sm">{errors.phone.message}</p>
