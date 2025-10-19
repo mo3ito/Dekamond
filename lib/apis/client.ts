@@ -406,15 +406,13 @@
 //       .then((res) => res.data),
 // };
 
-
 import axios, {
   AxiosError,
   AxiosInstance,
   AxiosProgressEvent,
   InternalAxiosRequestConfig,
 } from "axios";
-import Cookies from "js-cookie"
-
+import Cookies from "js-cookie";
 
 const getAccessToken = () => Cookies.get("accessToken");
 const getRefreshToken = () => Cookies.get("refreshToken");
@@ -431,16 +429,12 @@ const clearTokens = () => {
 };
 
 /* ---------------------- 🔁 رفرش توکن ---------------------- */
-
 const refreshAccessToken = async (baseURL: string): Promise<string> => {
   const refreshToken = getRefreshToken();
   if (!refreshToken) throw new Error("No refresh token available");
 
   try {
-    const response = await axios.post(`${baseURL}/auth/refresh`, {
-      refreshToken,
-    });
-
+    const response = await axios.post(`${baseURL}/auth/refresh`, { refreshToken });
     const { accessToken, refreshToken: newRefreshToken } = response.data;
     saveTokens(accessToken, newRefreshToken);
     return accessToken;
@@ -449,8 +443,6 @@ const refreshAccessToken = async (baseURL: string): Promise<string> => {
     throw new Error("Session expired. Please log in again.");
   }
 };
-
-/* ---------------------- 🧩 صف درخواست‌ها ---------------------- */
 
 let isRefreshing = false;
 let failedQueue: any[] = [];
@@ -463,21 +455,21 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-
-
 export const createApiClient = (API_BASE_URL: string) => {
   const api: AxiosInstance = axios.create({
     baseURL: API_BASE_URL,
-    withCredentials: true, 
+    withCredentials: true,
     headers: { "Content-Type": "application/json" },
   });
 
   /* ---------------------- 📤 interceptor درخواست ---------------------- */
   api.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-      const token = getAccessToken();
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+    (config: InternalAxiosRequestConfig & { isAuth?: boolean }) => {
+      if (config.isAuth) {
+        const token = getAccessToken();
+        if (token && config.headers) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
       return config;
     },
@@ -487,10 +479,10 @@ export const createApiClient = (API_BASE_URL: string) => {
   /* ---------------------- 📥 interceptor پاسخ ---------------------- */
   api.interceptors.response.use(
     (response) => response,
-    async (error: AxiosError) => {
-      const originalRequest: any = error.config;
+    async (error: AxiosError & { config: any }) => {
+      const originalRequest = error.config;
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      if (originalRequest.isAuth && error.response?.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
             failedQueue.push({ resolve, reject });
@@ -524,70 +516,68 @@ export const createApiClient = (API_BASE_URL: string) => {
     }
   );
 
-  
+  /* ---------------------- 🧱 متدهای CRUD ---------------------- */
+  const requestWrapper = <T>(
+    method: "get" | "post" | "put" | "delete",
+    url: string,
+    payload?: any,
+    onProgress?: (p: number) => void,
+    isAuth: boolean = true
+  ) => {
+    const config: any = { isAuth };
+
+    if (method === "get" || method === "delete") {
+      if (onProgress) {
+        config.onDownloadProgress = (e: AxiosProgressEvent) => {
+          if (e.total) onProgress(Math.round((e.loaded * 100) / e.total));
+        };
+      }
+      return api[method]<T>(url, config).then((res) => res.data);
+    }
+
+    if (method === "post" || method === "put") {
+      if (onProgress) {
+        config.onUploadProgress = (e: AxiosProgressEvent) => {
+          if (e.total) onProgress(Math.round((e.loaded * 100) / e.total));
+        };
+      }
+      return api[method]<T>(url, payload, config).then((res) => res.data);
+    }
+
+    throw new Error("Invalid method");
+  };
 
   return {
-    get: <T>(url: string, onProgress?: (p: number) => void) =>
-      api
-        .get<T>(url, {
-          onDownloadProgress: (e: AxiosProgressEvent) => {
-            if (e.total && onProgress) {
-              onProgress(Math.round((e.loaded * 100) / e.total));
-            }
-          },
-        })
-        .then((res) => res.data),
+    get: <T>(url: string, onProgress?: (p: number) => void, isAuth: boolean = true) =>
+      requestWrapper<T>("get", url, undefined, onProgress, isAuth),
 
     post: <T, P = unknown>(
       url: string,
       payload?: P,
-      onProgress?: (p: number) => void
-    ) =>
-      api
-        .post<T>(url, payload, {
-          onUploadProgress: (e: AxiosProgressEvent) => {
-            if (e.total && onProgress) {
-              onProgress(Math.round((e.loaded * 100) / e.total));
-            }
-          },
-        })
-        .then((res) => res.data),
+      onProgress?: (p: number) => void,
+      isAuth: boolean = true
+    ) => requestWrapper<T>("post", url, payload, onProgress, isAuth),
 
     put: <T, P = unknown>(
       url: string,
       payload?: P,
-      onProgress?: (p: number) => void
-    ) =>
-      api
-        .put<T>(url, payload, {
-          onUploadProgress: (e: AxiosProgressEvent) => {
-            if (e.total && onProgress) {
-              onProgress(Math.round((e.loaded * 100) / e.total));
-            }
-          },
-        })
-        .then((res) => res.data),
+      onProgress?: (p: number) => void,
+      isAuth: boolean = true
+    ) => requestWrapper<T>("put", url, payload, onProgress, isAuth),
 
-    delete: <T>(url: string, onProgress?: (p: number) => void) =>
-      api
-        .delete<T>(url, {
-          onDownloadProgress: (e: AxiosProgressEvent) => {
-            if (e.total && onProgress) {
-              onProgress(Math.round((e.loaded * 100) / e.total));
-            }
-          },
-        })
-        .then((res) => res.data),
+    delete: <T>(url: string, onProgress?: (p: number) => void, isAuth: boolean = true) =>
+      requestWrapper<T>("delete", url, undefined, onProgress, isAuth),
   };
 };
 
 
-// import { createApiClient } from "@/services/apiClient";
+const apiClient = createApiClient(import.meta.env.VITE_API_URL);
 
-// const API_BASE_URL = import.meta.env.VITE_API_URL;
-// export const apiClient = createApiClient(API_BASE_URL);
+// درخواست با AccessToken و RefreshToken
+apiClient.get("/users", undefined, true);
 
-// // مثال استفاده
-// apiClient.put("/users/123", { name: "Mostafa" })
-//   .then((data) => console.log("Updated user:", data))
-//   .catch((err) => console.error(err));
+// درخواست بدون هیچ توکنی
+apiClient.get("/public/data", undefined, false);
+
+// POST با توکن
+apiClient.post("/posts", { title: "Hello" }, undefined, true);
